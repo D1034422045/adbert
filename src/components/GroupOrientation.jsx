@@ -1,18 +1,18 @@
 import { useSelector, useDispatch } from "react-redux";
-import { increment, reset, toggleDisable } from "../store/actions";
+import { INCREMENT, RESET, TOGGLE_DISABLE } from "../store/counterSlice";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 
 export default function GroupOrientation() {
-  const count = useSelector((state) => state.count);
-  const isDisable = useSelector((state) => state.isDisable);
+  const count = useSelector((state) => state.counter.count);
+  const isDisable = useSelector((state) => state.counter.isDisable);
   const dispatch = useDispatch();
 
   const buttons = [
     <Button
       key="one"
       onClick={() => {
-        dispatch(increment());
+        dispatch(INCREMENT());
       }}
       disabled={isDisable}
     >
@@ -21,7 +21,7 @@ export default function GroupOrientation() {
     <Button
       key="two"
       onClick={() => {
-        dispatch(reset());
+        dispatch(RESET());
       }}
     >
       CLEAR
@@ -29,7 +29,7 @@ export default function GroupOrientation() {
     <Button
       key="three"
       onClick={() => {
-        dispatch(toggleDisable());
+        dispatch(TOGGLE_DISABLE());
       }}
     >
       {isDisable ? "ABLE" : "DISABLE"}
