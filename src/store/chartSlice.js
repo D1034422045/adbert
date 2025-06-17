@@ -20,33 +20,19 @@ const monthNames = [
 ];
 
 const months = Array.from({ length: 12 }, (_, i) => i + 1);
-
-const fetchTainanMonthData = (month) => {
-  return axios.get(API_URL, {
-    params: {
-      Authorization: token,
-      Month: month,
-      StationID: "467410",
-    },
-  });
+const stationIds = {
+  tainan: "467410",
+  kaohsiung: "467440",
+  taichung: "467490",
 };
 
-const fetchKaohsiungMonthData = (month) => {
+// 通用抓資料函式
+const fetchCityMonthData = (cityKey, month) => {
   return axios.get(API_URL, {
     params: {
       Authorization: token,
       Month: month,
-      StationID: "467440",
-    },
-  });
-};
-
-const fetchTaichungMonthData = (month) => {
-  return axios.get(API_URL, {
-    params: {
-      Authorization: token,
-      Month: month,
-      StationID: "467490",
+      StationID: stationIds[cityKey],
     },
   });
 };
@@ -54,57 +40,32 @@ const fetchTaichungMonthData = (month) => {
 export const fetchChartData = createAsyncThunk(
   "chart/fetchChartData",
   async () => {
-    const tainanResponses = await Promise.all(months.map(fetchTainanMonthData));
-    const tainan = tainanResponses.map((res) => {
-      const monthly =
-        res.data.records.data.surfaceObs.location[0].stationObsStatistics
-          .AirTemperature.monthly[0];
-      const city =
-        res.data.records.data.surfaceObs.location[0].station.StationName;
-      return {
-        month: monthly.Month,
-        temperature: monthly.Mean,
-        city,
-      };
-    });
-
-    const kaohsiungResponses = await Promise.all(
-      months.map(fetchKaohsiungMonthData)
+    // 對三個城市分別做 12 個月的請求
+    const cityKeys = Object.keys(stationIds);
+    const allResponses = await Promise.all(
+      cityKeys.map((city) =>
+        Promise.all(months.map((m) => fetchCityMonthData(city, m)))
+      )
     );
-    const kaohsiung = kaohsiungResponses.map((res) => {
-      const monthly =
-        res.data.records.data.surfaceObs.location[0].stationObsStatistics
-          .AirTemperature.monthly[0];
-      const city =
-        res.data.records.data.surfaceObs.location[0].station.StationName;
-      return {
-        month: monthly.Month,
-        temperature: monthly.Mean,
-        city,
-      };
-    });
+    // allResponses 結構：[[台南12個月回應], [高雄12個月回應], [台中12個月回應]]
 
-    const taichungResponses = await Promise.all(
-      months.map(fetchTaichungMonthData)
+    // 解析資料，轉成一維陣列
+    const cityData = allResponses.map((responses) =>
+      responses.map((res) => {
+        const monthly =
+          res.data.records.data.surfaceObs.location[0].stationObsStatistics
+            .AirTemperature.monthly[0];
+        return parseInt(monthly.Mean);
+      })
     );
-    const taichung = taichungResponses.map((res) => {
-      const monthly =
-        res.data.records.data.surfaceObs.location[0].stationObsStatistics
-          .AirTemperature.monthly[0];
-      const city =
-        res.data.records.data.surfaceObs.location[0].station.StationName;
-      return {
-        month: monthly.Month,
-        temperature: monthly.Mean,
-        city,
-      };
-    });
+    // cityData: [[台南12月氣溫], [高雄12月氣溫], [台中12月氣溫]]
 
+    // 組合資料
     const combinedData = monthNames.map((name, index) => ({
       name,
-      tainan: parseInt(tainan[index].temperature),
-      kaohsiung: parseInt(kaohsiung[index].temperature),
-      taichung: parseInt(taichung[index].temperature),
+      tainan: cityData[0][index],
+      kaohsiung: cityData[1][index],
+      taichung: cityData[2][index],
     }));
 
     return combinedData;

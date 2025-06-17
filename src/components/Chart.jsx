@@ -46,14 +46,14 @@ export default function Chart() {
           <Tooltip />
           <Legend
             payload={[
-              { value: "kaohsiung", type: "square", color: "#6495ed" },
               { value: "taichung", type: "square", color: "#8fbc8f" },
               { value: "tainan", type: "square", color: "#ffa500" },
+              { value: "kaohsiung", type: "square", color: "#6495ed" },
             ]}
           />
           <Bar dataKey="taichung" stackId="a" fill="#8fbc8f" barSize={40} />
-          <Bar dataKey="kaohsiung" stackId="a" fill="#6495ed" barSize={40} />
           <Bar dataKey="tainan" stackId="a" fill="#ffa500" barSize={40} />
+          <Bar dataKey="kaohsiung" stackId="a" fill="#6495ed" barSize={40} />
         </BarChart>
       </ResponsiveContainer>
     </div>
