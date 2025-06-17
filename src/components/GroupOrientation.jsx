@@ -1,5 +1,9 @@
 import { useSelector, useDispatch } from "react-redux";
-import { INCREMENT, RESET, TOGGLE_DISABLE } from "../store/counterSlice";
+import {
+  INCREMENT,
+  RESET,
+  TOGGLE_DISABLE,
+} from "../store/counter/counterSlice";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 

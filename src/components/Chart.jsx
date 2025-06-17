@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { fetchChartData } from "../store/chartSlice";
+import { fetchChartData } from "../store/chart/chartThunks";
 import { useSelector, useDispatch } from "react-redux";
 import {
   BarChart,
