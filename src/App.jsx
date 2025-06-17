@@ -9,8 +9,8 @@ function App() {
     <>
       <Provider store={store}>
         <GroupOrientation></GroupOrientation>
+        <Chart></Chart>
       </Provider>
-      <Chart></Chart>
     </>
   );
 }
