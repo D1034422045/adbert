@@ -67,59 +67,9 @@ export default function Chart() {
   const [combinedData, setCombinedData] = useState([]);
 
   useEffect(() => {
-    async function getTainanTemperatureData() {
+    async function getCityTemperatureData(fetchFnPerMonth) {
       try {
-        const responses = await Promise.all(months.map(fetchTainanMonthData));
-
-        const allData = responses.map((res) => {
-          const monthly =
-            res.data.records.data.surfaceObs.location[0].stationObsStatistics
-              .AirTemperature.monthly[0];
-          const city =
-            res.data.records.data.surfaceObs.location[0].station.StationName;
-          return {
-            month: monthly.Month,
-            temperature: monthly.Mean,
-            city,
-          };
-        });
-
-        return allData;
-      } catch (err) {
-        console.error("有錯誤：", err);
-        return [];
-      }
-    }
-
-    async function getKaohsiungTemperatureData() {
-      try {
-        const responses = await Promise.all(
-          months.map(fetchKaohsiungMonthData)
-        );
-
-        const allData = responses.map((res) => {
-          const monthly =
-            res.data.records.data.surfaceObs.location[0].stationObsStatistics
-              .AirTemperature.monthly[0];
-          const city =
-            res.data.records.data.surfaceObs.location[0].station.StationName;
-          return {
-            month: monthly.Month,
-            temperature: monthly.Mean,
-            city,
-          };
-        });
-
-        return allData;
-      } catch (err) {
-        console.error("有錯誤：", err);
-        return [];
-      }
-    }
-
-    async function getTaichungTemperatureData() {
-      try {
-        const responses = await Promise.all(months.map(fetchTaichungMonthData));
+        const responses = await Promise.all(months.map(fetchFnPerMonth));
 
         const allData = responses.map((res) => {
           const monthly =
@@ -142,9 +92,9 @@ export default function Chart() {
     }
 
     async function fetchData() {
-      const tainan = await getTainanTemperatureData();
-      const kaohsiung = await getKaohsiungTemperatureData();
-      const taichung = await getTaichungTemperatureData();
+      const tainan = await getCityTemperatureData(fetchTainanMonthData);
+      const kaohsiung = await getCityTemperatureData(fetchKaohsiungMonthData);
+      const taichung = await getCityTemperatureData(fetchTaichungMonthData);
 
       const combinedData = monthNames.map((name, index) => ({
         name,
